@@ -1,2 +1,4 @@
-package me.khjzzm.thejavatest;public class Study {
+package me.khjzzm.thejavatest;
+
+public class Study {
 }
