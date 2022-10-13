@@ -1,10 +1,14 @@
 package me.khjzzm.thejavatest;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
 import java.time.Duration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -13,7 +17,7 @@ class StudyTest {
     @Test
     @DisplayName("스터디 만들기")
     void create_new_study() {
-        Study study = new Study(0);
+        Study study = new Study(5);
 
         assertNotNull(study);
         // messages 를 람다식으로 작성하는 이유는?
@@ -24,12 +28,12 @@ class StudyTest {
 
         assertTimeout(Duration.ofMillis(100), ()-> {
             new Study(10);
-            Thread.sleep(300);
+            Thread.sleep(50);
         });
 
         assertTimeoutPreemptively(Duration.ofMillis(100), ()-> {
             new Study(10);
-            Thread.sleep(300);
+            Thread.sleep(50);
         });
 
         assertAll(
@@ -45,6 +49,33 @@ class StudyTest {
     @Disabled
     void create_new_study_again() {
         System.out.println("create");
+    }
+
+    @Test
+    @DisplayName("조건에 따라 테스트 실행하기")
+    void create_con_study() {
+        String test_env = System.getenv("TEST_ENV");
+        System.out.println("TEST_ENV:" + test_env);
+        assumeTrue("LOCAL".equalsIgnoreCase(test_env));
+
+        assumingThat("LOCAL".equalsIgnoreCase(test_env), ()->{
+            System.out.println("local");
+            Study actual = new Study(100);
+            assertThat(actual.getLimit()).isGreaterThan(0);
+        });
+    }
+
+
+    @Test
+    @DisplayName("조건에 따라 테스트 실행하기 annotation")
+    @EnabledOnOs({OS.MAC, OS.LINUX})
+    @EnabledOnJre(JRE.JAVA_8)
+//    @DisabledOnOs(OS.MAC)
+    @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "LOCAL")
+    void create_con1_study() {
+        String test_env = System.getenv("TEST_ENV");
+        System.out.println("TEST_ENV:" + test_env);
+        assumeTrue("LOCAL".equalsIgnoreCase(test_env));
     }
 
     @BeforeAll
