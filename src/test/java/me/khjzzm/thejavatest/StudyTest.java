@@ -78,6 +78,20 @@ class StudyTest {
         assumeTrue("LOCAL".equalsIgnoreCase(test_env));
     }
 
+
+    @Test
+    @Tag("fast")
+    void test_tagging() {
+        System.out.println("local 환경에서 테스트 fast");
+    }
+
+    @Test
+    @Tag("slow")
+    void test_tagging2() {
+        System.out.println("ci 환경에서 테스트 slow");
+    }
+
+
     @BeforeAll
     static void beforeAll() {
         System.out.println("StudyTest.beforeAll");
