@@ -2,8 +2,11 @@ package me.khjzzm.thejavatest;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.*;
 
 import java.time.Duration;
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,12 +29,12 @@ class StudyTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Study(-10));
         assertEquals("limit 은 0보다 커야 한다.", exception.getMessage());
 
-        assertTimeout(Duration.ofMillis(100), ()-> {
+        assertTimeout(Duration.ofMillis(100), () -> {
             new Study(10);
             Thread.sleep(50);
         });
 
-        assertTimeoutPreemptively(Duration.ofMillis(100), ()-> {
+        assertTimeoutPreemptively(Duration.ofMillis(100), () -> {
             new Study(10);
             Thread.sleep(50);
         });
@@ -58,7 +61,7 @@ class StudyTest {
         System.out.println("TEST_ENV:" + test_env);
         assumeTrue("LOCAL".equalsIgnoreCase(test_env));
 
-        assumingThat("LOCAL".equalsIgnoreCase(test_env), ()->{
+        assumingThat("LOCAL".equalsIgnoreCase(test_env), () -> {
             System.out.println("local");
             Study actual = new Study(100);
             assertThat(actual.getLimit()).isGreaterThan(0);
@@ -90,6 +93,45 @@ class StudyTest {
     void test_tagging2() {
         System.out.println("ci 환경에서 테스트 slow");
     }
+
+
+    @Test
+    @FastTest
+    void test_annotation() {
+        System.out.println("local 환경에서 테스트 fast");
+    }
+
+    @Test
+    @SlowTest
+    void test_annotation2() {
+        System.out.println("ci 환경에서 테스트 slow");
+    }
+
+
+    @DisplayName("반복 테스트")
+    @RepeatedTest(value = 10, name = "{currentRepetition}/{totalRepetitions}")
+    void repeatTest(RepetitionInfo repetitionInfo) {
+        System.out.println("test" + repetitionInfo.getCurrentRepetition() + repetitionInfo.getTotalRepetitions());
+    }
+
+    @ParameterizedTest(name = "{index} / {0}")
+    @ValueSource(strings = {"날씨가", "많이", "추워지고", "있네요."})
+    void parameterizedTest(String message){
+        System.out.println("message = " + message);
+    }
+
+
+    @ParameterizedTest(name = "{index} / {0}")
+    @ValueSource(strings = {"날씨가", "많이", "추워지고", "있네요."})
+//    @EmptySource
+//    @NullSource
+    @NullAndEmptySource
+    void parameterizedTest2(String message){
+        System.out.println("message = " + message);
+    }
+
+
+
 
 
     @BeforeAll
