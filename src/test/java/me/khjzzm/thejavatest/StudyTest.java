@@ -6,7 +6,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
 import java.time.Duration;
-import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,12 +14,15 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StudyTest {
+
+    int value = 1;
 
     @Test
     @DisplayName("스터디 만들기")
     void create_new_study() {
-        Study study = new Study(5);
+        Study study = new Study(value++);
 
         assertNotNull(study);
         // messages 를 람다식으로 작성하는 이유는?
@@ -85,12 +87,14 @@ class StudyTest {
     @Test
     @Tag("fast")
     void test_tagging() {
+        value++;
         System.out.println("local 환경에서 테스트 fast");
     }
 
     @Test
     @Tag("slow")
     void test_tagging2() {
+        value++;
         System.out.println("ci 환경에서 테스트 slow");
     }
 
@@ -98,7 +102,7 @@ class StudyTest {
     @Test
     @FastTest
     void test_annotation() {
-        System.out.println("local 환경에서 테스트 fast");
+        System.out.println("local 환경에서 테스트 fast" + value);
     }
 
     @Test
@@ -131,16 +135,13 @@ class StudyTest {
     }
 
 
-
-
-
     @BeforeAll
-    static void beforeAll() {
+    void beforeAll() {
         System.out.println("StudyTest.beforeAll");
     }
 
     @AfterAll
-    static void afterAll() {
+    void afterAll() {
         System.out.println("StudyTest.afterAll");
     }
 
