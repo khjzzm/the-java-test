@@ -2,6 +2,7 @@ package me.khjzzm.thejavatest;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
@@ -15,6 +16,8 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ExtendWith(FindSlowTestExtension.class)
 class StudyTest {
 
     int value = 1;
@@ -99,8 +102,27 @@ class StudyTest {
     }
 
 
+    @SlowTest
+    @Tag("slow")
+    @DisplayName("Extension")
+    void findSlowTestExtension_pass() throws InterruptedException {
+        Thread.sleep(1005L);
+        System.out.println("ci 환경에서 테스트 slow");
+    }
+
+    @Test
+    @Tag("slow")
+    @DisplayName("Extension")
+    void findSlowTestExtension() throws InterruptedException {
+        Thread.sleep(1005L);
+        System.out.println("ci 환경에서 테스트 slow");
+    }
+
+
+
     @Test
     @FastTest
+    @Order(2)
     void test_annotation() {
         System.out.println("local 환경에서 테스트 fast" + value);
     }
@@ -136,12 +158,12 @@ class StudyTest {
 
 
     @BeforeAll
-    void beforeAll() {
+    static void beforeAll() {
         System.out.println("StudyTest.beforeAll");
     }
 
     @AfterAll
-    void afterAll() {
+    static void afterAll() {
         System.out.println("StudyTest.afterAll");
     }
 
